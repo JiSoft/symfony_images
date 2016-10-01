@@ -43,6 +43,13 @@ class Album
      */
     private $createdAt;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="images_count", type="integer")
+     */
+    private $imagesCount=0;
+
 
     /**
      * Get id
@@ -121,5 +128,28 @@ class Album
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Set imagesCount
+     *
+     * @param integer $imagesCount
+     * @return Album
+     */
+    public function setImagesCount($imagesCount)
+    {
+        $this->imagesCount = $imagesCount;
+
+        return $this;
+    }
+
+    /**
+     * Get imagesCount
+     *
+     * @return integer
+     */
+    public function getImagesCount()
+    {
+        return $this->imagesCount;
     }
 }
