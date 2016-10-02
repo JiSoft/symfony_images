@@ -6,6 +6,8 @@ parameters:
 services:
     app.encoder:
         class: AppBundle\Utils\Encoder
+    app.grabber:
+            class: AppBundle\Utils\Grabber
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
