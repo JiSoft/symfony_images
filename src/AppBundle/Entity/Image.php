@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use AppBundle\Utils\Encoder;
 
 /**
  * Image
@@ -248,4 +249,34 @@ class Image
         return $this->mime;
     }
 
+    /**
+     * Get image's slug
+     *
+     * @return string
+     */
+    public function getSlug()
+    {
+        $en = new Encoder();
+        return '/image/'.$en->encodeId($this->id);
+    }
+
+    /**
+     * Get image content
+     *
+     * @return string
+     */
+    public function getContent()
+    {
+        return file_get_contents($this->path);
+    }
+
+    /**
+     * Get image content encoded by Base64
+     *
+     * @return string
+     */
+    public function getData()
+    {
+        return 'data: '.$this->mime.';base64,'.base64_encode(file_get_contents($this->path));
+    }
 }

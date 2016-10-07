@@ -163,4 +163,18 @@ class Album
     {
         return $this->imagesCount;
     }
+
+    public function getImages()
+    {
+//        $images = new ArrayCollection();
+//        foreach ($this->images as $image) {
+//            $newImage = $image;
+//            unset($newImage['path']);
+//            unset($newImage['mime']);
+//            $newImage['src'] = 'data: '.$image['mime'].';base64,'.base64_encode(file_get_contents($image['path']));
+//            $images[] = $newImage;
+//        }
+//        return $images;
+        return $this->images;
+    }
 }
