@@ -9,7 +9,9 @@ namespace AppBundle\Utils;
  */
 class Grabber
 {
+    /** @const target site with images */
     const SITE_IMAGES = 'https://www.pexels.com/search';
+    /** @const pause duration between copying image actions */
     const INTERVAL_SECONDS = 0;
 
     /** @var array   paths to the grabbed images  */
@@ -28,6 +30,8 @@ class Grabber
      */
     public function getImages($topic, $count, $destFolder)
     {
+        if (empty($topic) || empty($count) || empty($destFolder))
+            return [];
         if (empty($this->topics)) {
             $this->topics[] = $topic;
             $this->targetCount = $count;
@@ -40,10 +44,14 @@ class Grabber
         $toGet = $foundCount>=$count ? $count : $foundCount;
         $this->images = array_merge($this->images, $this->grab(array_slice($urls,0,$toGet), $destFolder));
         $totalCount = count($this->images);
-        if ($totalCount==$this->targetCount)
-            return $this->images;
-        else
-            return $this->getImages(next($this->topics), $count-$totalCount, $destFolder);
+        if ($totalCount>=$this->targetCount){
+            $result = array_slice($this->images, 0, $this->targetCount);
+            $this->topics = $this->images = [];
+            $this->targetCount = 0;
+            return $result;
+        } else {
+            return $this->getImages(next($this->topics), $this->targetCount-$totalCount, $destFolder);
+        }
     }
 
     /**

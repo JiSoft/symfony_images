@@ -24,16 +24,10 @@ class Image
     /**
      * @var int
      *
-     * @ORM\Column(name="album_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Album")
+     * @ORM\JoinColumn(name="album_id", referencedColumnName="id")
      */
-    private $albumId;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="slug", type="string", length=255)
-     */
-    private $slug;
+    private $album;
 
     /**
      * @var string
@@ -57,9 +51,9 @@ class Image
     private $height;
 
     /**
-     * @var int
+     * @var \DateTime
      *
-     * @ORM\Column(name="created_at", type="integer")
+     * @ORM\Column(name="created_at", type="datetime")
      */
     private $createdAt;
 
@@ -70,6 +64,18 @@ class Image
      */
     private $md5;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mime", type="string", length=64)
+     */
+    private $mime;
+
+    public function __construct(Album $album)
+    {
+        $this->createdAt = new \DateTime();
+        $this->album = $album;
+    }
 
     /**
      * Get id
@@ -82,14 +88,14 @@ class Image
     }
 
     /**
-     * Set albumId
+     * Set album
      *
-     * @param integer $albumId
+     * @param Album $album
      * @return Image
      */
-    public function setAlbumId($albumId)
+    public function setAlbum(Album $album)
     {
-        $this->albumId = $albumId;
+        $this->album = $album;
 
         return $this;
     }
@@ -101,30 +107,7 @@ class Image
      */
     public function getAlbumId()
     {
-        return $this->albumId;
-    }
-
-    /**
-     * Set slug
-     *
-     * @param string $slug
-     * @return Image
-     */
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
-
-    /**
-     * Get slug
-     *
-     * @return string 
-     */
-    public function getSlug()
-    {
-        return $this->slug;
+        return $this->album->getId();
     }
 
     /**
@@ -199,10 +182,10 @@ class Image
     /**
      * Set createdAt
      *
-     * @param integer $createdAt
+     * @param \DateTime $createdAt
      * @return Image
      */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(\DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
 
@@ -241,4 +224,28 @@ class Image
     {
         return $this->md5;
     }
+
+    /**
+     * Set mime type
+     *
+     * @param string $mime
+     * @return Image
+     */
+    public function setMime($mime)
+    {
+        $this->mime = $mime;
+
+        return $this;
+    }
+
+    /**
+     * Get mime type
+     *
+     * @return string
+     */
+    public function getMime()
+    {
+        return $this->mime;
+    }
+
 }
