@@ -1,0 +1,4 @@
+<Directory "storage">
+  AllowOverride None
+  Options -ExecCGI
+</Directory>

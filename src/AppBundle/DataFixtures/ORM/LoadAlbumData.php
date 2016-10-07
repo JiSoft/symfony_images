@@ -22,6 +22,8 @@ class LoadAlbumData extends AbstractFixture implements FixtureInterface
     const DOWN_COUNT = 20;
     /** @const relative path to the folder for downloaded images from the app root folder */
     const IMAGE_FOLDER = 'storage';
+    /** @const must specify web server user for owner dir of images storage */
+    const WEBSERVER_USER = 'nginx';
 
     /** @var  string  path to the folder for downloaded images */
     private $targetFolder;
@@ -49,6 +51,10 @@ class LoadAlbumData extends AbstractFixture implements FixtureInterface
             ['title'=>'Sport', 'description'=>'Motivated sport photos'],
         ];
 
+        if (!is_dir($this->targetFolder)) {
+            mkdir($this->targetFolder, 0700);
+            chown($this->targetFolder, self::WEBSERVER_USER);
+        }
 
         $count = self::START_COUNT;
         $grabber = new Grabber();
@@ -87,6 +93,7 @@ class LoadAlbumData extends AbstractFixture implements FixtureInterface
                 sleep(mt_rand(3,10));
             }
         }
+        $this->chmod();
     }
 
     private function clean()
@@ -96,6 +103,16 @@ class LoadAlbumData extends AbstractFixture implements FixtureInterface
                 continue;
             }
             unlink($this->targetFolder.'/'.$item);
+        }
+    }
+
+    private function chmod()
+    {
+        foreach (scandir($this->targetFolder) as $item) {
+            if ($item == '.' || $item == '..') {
+                continue;
+            }
+            chmod($this->targetFolder.'/'.$item, 0600);
         }
     }
 }
