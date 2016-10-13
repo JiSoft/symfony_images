@@ -1,11 +1,11 @@
-symfony_images
-==============
+Symfony image gallery
+=====================
 
-A simple Symfony 2.8 project which provides online access to the albums of
-images.
+A simple project which provides online access to the albums of
+images. It based on Symfony 2.8 and MarionetteJS 3.0.
 
-How start:
-----------
+How to start:
+-------------
 1. Prepare database
     ```php app/console doctrine:database:create```
     ```php app/console doctrine:schema:update --force```
