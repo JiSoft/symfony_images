@@ -12,3 +12,4 @@
 /bin/
 /composer.lock
 /storage/
+/src/AppBundle/Resource/node_modules/

@@ -21,7 +21,7 @@ class Serial
      * Serializes entities to JSON
      *
      * @param mixed $content   entities
-     * @return string
+     * @return string  JSON
      */
     public function toJson($content)
     {
@@ -33,15 +33,20 @@ class Serial
     }
 
     /**
-     * Serializes entitites to list of images for browser
+     * Serializes entities to the list (allow hide and transform Entity's attributes)
      *
      * @param mixed $content  entities
-     * @return string|\Symfony\Component\Serializer\Encoder\scalar
+     * @param array $hiddenAttributes  which attributes should hide
+     * @param array $callbacks         custom callbacks for normalizer to transform specified attribute
+     * @return string  JSON
      */
-    public function toList($content)
+    public function toList($content, array $hiddenAttributes=[], array $callbacks=[])
     {
         $normalizer = new ObjectNormalizer();
-        $normalizer->setIgnoredAttributes(['id', 'albumId', 'path', 'md5', 'mime', 'data', 'content']);
+        if ($hiddenAttributes)
+            $normalizer->setIgnoredAttributes($hiddenAttributes);
+        if ($callbacks)
+            $normalizer->setCallbacks($callbacks);
 
         $serializer = new Serializer(
             array(new DateTimeNormalizer('Y-m-d H:i:s'), $normalizer),

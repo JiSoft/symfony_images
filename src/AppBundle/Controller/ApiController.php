@@ -4,8 +4,8 @@ namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ApiController extends Controller
@@ -23,7 +23,9 @@ class ApiController extends Controller
         $repository = $this->getDoctrine()->getRepository('AppBundle:Album');
         $albums = $repository->findAll();
         $serializer = $this->get('app.serializer');
-        return new JsonResponse($serializer->toJson($albums));
+        $response = new Response($serializer->toList($albums, ['images']));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 
     /**
@@ -40,11 +42,16 @@ class ApiController extends Controller
         $serializer = $this->get('app.serializer');
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $album->getImages(),
+            array_values($album->getImages()->toArray()),
             $request->query->getInt('page', 1),
-            self::PAGE_LIMIT
+            self::PAGE_LIMIT,
+            array('pageParameterName' => 'page')
         );
-        return new JsonResponse($serializer->toList($pagination));
+        $response = new Response(
+            $serializer->toList($pagination, ['id', 'albumId', 'createdAt', 'path', 'md5', 'mime', 'data', 'content'])
+        );
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 
     /**
