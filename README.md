@@ -27,4 +27,4 @@ apply directives.
     ```php app/console server:run```
     
 7. Try into your browser
-    ```http://127.0.0.1:8000/```
+    http://127.0.0.1:8000/
