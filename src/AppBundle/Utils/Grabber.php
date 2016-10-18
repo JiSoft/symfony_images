@@ -20,15 +20,18 @@ class Grabber
     private $topics = [];
     /** @var  int    target quantity of images for grabbing */
     private $targetCount;
+    /** @var string  target photo's landscape */
+    private $landscape = 'meduim';
 
     /**
      * Uploads to the specified $destFolder images by the specified topic
      * @param string $topic  your favorite images topic, for example: "music", "dogs", etc.
      * @param int $count     how many it will grab
      * @param string $destFolder the destination local folder to save uploaded images
+     * @param string $orientation  needed photo's landscape medium|portrait|both
      * @return array   array of file names of grabbed images or an empty array
      */
-    public function getImages($topic, $count, $destFolder)
+    public function getImages($topic, $count, $destFolder, $orientation='medium')
     {
         if (empty($topic) || empty($count) || empty($destFolder))
             return [];
@@ -36,6 +39,11 @@ class Grabber
             $this->topics[] = $topic;
             $this->targetCount = $count;
         }
+
+        if (in_array($orientation,['medium', 'portrait']))
+            $this->landscape = $orientation;
+        if ($orientation==='both')
+            $this->landscape = '(medium|portrait)';
 
         list($urls, $related) = $this->parseTopic($topic);
         $this->topics = array_merge($this->topics, $related);
@@ -68,9 +76,8 @@ class Grabber
             $content = file_get_contents($targetUrl);
             if (preg_match('/(Sorry, no pictures found)+/',$content))
                 return [[],[]];
-            if (preg_match_all('/https?:\/\/[^\s]+\S+\.(jpg|png|jpeg)/',$content,$urls)) {
+            if (preg_match_all('/https:\/\/static\.pexels\.com\/photos\/\d+\/\S+'.$this->landscape.'\.(jpg|png|jpeg)/',$content,$urls)) {
                 if (isset($urls[0]) && isset($urls[1])) {
-                    unset($urls[0][count($urls[0])-1]);
                     $dump = $urls[0];
                 }
             }
