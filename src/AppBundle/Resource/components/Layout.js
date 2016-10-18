@@ -62,6 +62,7 @@ export default Marionette.View.extend({
 
         onShowImageList(albumId) {
             var album = this.options.albums.get({id:albumId});
+            this.options.pages = Math.ceil(album.get('imagesCount')/this.options.perPage);
             this.options.collection = new ImagesCollection();
             this.options.url = '/album/'+albumId;
             var self = this;
@@ -69,6 +70,7 @@ export default Marionette.View.extend({
                 url: self.options.url,
                 success: function() {
                     album.set('page', 2);
+                    album.set('pages', self.options.pages);
                     self.showChildView('content', new ImagesView({collection: self.options.collection, album: album}));
                 },
                 error: function() {
@@ -82,7 +84,7 @@ export default Marionette.View.extend({
         onPaginateImageList(albumId, pageNo) {
             var album = this.options.albums.get({id:albumId});
 
-            var pages = Math.ceil(album.get('imagesCount')/this.options.perPage);
+            this.options.pages = Math.ceil(album.get('imagesCount')/this.options.perPage);
             if (this.options.page>this.options.pages)
                 return;
 
@@ -91,7 +93,8 @@ export default Marionette.View.extend({
                 url: this.options.url,
                 data: {page: pageNo},
                 success: function() {
-                    album.set('page', pageNo+1);
+                    album.set('page', +pageNo+1);
+                    album.set('pages',self.options.pages);
                     self.showChildView('content', new ImagesView({collection: self.options.collection, album: album}));
                 },
                 error: function() {
