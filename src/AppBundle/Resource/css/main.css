@@ -278,7 +278,19 @@ section#content {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
 }
 
-.error, .album_content {
+.thumbs, .menu {
+    list-style: none;
+}
+.thumbs > li, .menu > li {
+    list-style: none;
+    display: inline-block;
+    margin-right: 3%;
+}
+.thumbs > li > img {
+    border: 0;
+}
+
+.error, .album_content, .albums_detailed {
     margin-top: 10%;
 }
 /* ==========================================================================

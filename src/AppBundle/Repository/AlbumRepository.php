@@ -3,6 +3,7 @@
 namespace AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use AppBundle\Utils\Encoder;
 
 /**
  * AlbumRepository
@@ -12,4 +13,61 @@ use Doctrine\ORM\EntityRepository;
  */
 class AlbumRepository extends EntityRepository
 {
+    /** @var  Encoder $encoder */
+    private $encoder;
+
+    public function setEncoder(Encoder $encoder)
+    {
+        $this->encoder = $encoder;
+    }
+
+    /**
+     * Get all albums by image limitation
+     * @param int $limit how many images into the album
+     * @return array of albums with nested images (per $limit images into each album)
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function getAllByLimit($limit)
+    {
+        // another way shows in the next method (uses UNION)
+
+        $sql = "SELECT a.id, a.title, a.description, ".
+                     " SUBSTRING_INDEX(GROUP_CONCAT(i.id ORDER BY i.id SEPARATOR ','),',',:max) AS img_list
+                FROM album a LEFT JOIN image i ON a.id = i.album_id
+                GROUP BY a.id";
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt->execute([':max'=>$limit]);
+
+        $result = []; $encoder = $this->encoder;
+        foreach ($stmt->fetchAll() as $row) {
+            array_push($result, (object) array(
+                'id'=>$row['id'],
+                'title'=>$row['title'],
+                'description'=>$row['description'],
+                'images' => array_map(function($id) use ($encoder) {
+                    return '/image/'.$encoder->encodeId($id);
+                }, explode(',', $row['img_list']))
+            ));
+        }
+        return $result;
+    }
+
+    /**
+     * Another way to get albums with images by specified limit
+     * @param $limit
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function getAllByLimitMethod2($limit)
+    {
+        $albums = $this->getEntityManager()->getRepository('AppBundle:Album')->findAll();
+        $q = [];
+        foreach ($albums as $album)
+            array_push($q,sprintf("(SELECT album_id, id FROM image WHERE album_id=%d LIMIT %d)",$album->getId(),$limit));
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare(implode("UNION ALL",$q));
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }

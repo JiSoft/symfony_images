@@ -6,6 +6,7 @@ import HomeView   from './HomeView';
 import AlbumsView from './AlbumsView';
 import ImagesView from './ImagesView';
 import ErrorView  from './ErrorView';
+import AlbumsDetailedView from './AlbumsDetailedView';
 
 "use strict";
 
@@ -92,6 +93,25 @@ export default Marionette.View.extend({
                 success: function() {
                     album.set('page', pageNo+1);
                     self.showChildView('content', new ImagesView({collection: self.options.collection, album: album}));
+                },
+                error: function() {
+                    self.showChildView('content', new ErrorView({
+                        model: new Backbone.Model({message: "Hasn't being received the answer from the server"})
+                    }));
+                }
+            });
+        },
+
+        onShowAlbumListDetailed() {
+            var AlbumsDetailedCollection = Backbone.Collection.extend({});
+
+            var self = this;
+            var collection = new AlbumsDetailedCollection();
+            collection.fetch({
+                url: '/album-images',
+                success: function() {
+                    self.options.albums = collection;
+                    self.showChildView('content', new AlbumsDetailedView({collection: collection}));
                 },
                 error: function() {
                     self.showChildView('content', new ErrorView({

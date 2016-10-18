@@ -21,6 +21,11 @@ var Controller = Marionette.Object.extend({
         layout.triggerMethod('paginate:image:list', id, page);
     },
 
+    showAlbumsDetailed: function() {
+        var layout = this.getOption('layout');
+        layout.triggerMethod('show:album:list:detailed');
+    },
+
     home: function() {
         var layout = this.getOption('layout');
         layout.triggerMethod('show:home');
@@ -32,6 +37,7 @@ export default Marionette.AppRouter.extend({
     appRoutes: {
         '': 'home',
         'albums':    'showAlbums',
+        'albums_detailed': 'showAlbumsDetailed',
         'album/:id': 'showAlbum',
         'album/:id/page/:page': 'paginateAlbum'
     },

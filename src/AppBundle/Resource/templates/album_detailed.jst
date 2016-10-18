@@ -1,0 +1,6 @@
+<h3><a href="#album/<%= id %>"><%= title %></a></h3>
+<ul class="thumbs">
+    <% _.each(images, function(img){ %>
+        <li><img src="<%= _.escape(img) %>" width="55" height="55" /></li>
+    <% }); %>
+</ul>

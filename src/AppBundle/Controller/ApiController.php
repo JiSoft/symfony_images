@@ -79,4 +79,18 @@ class ApiController extends Controller
         });
         return $response;
     }
+
+    /**
+     * Returns list of albums with nested images as JSON
+     *
+     * @Route("/album-images", name="albums_limited_list", condition="request.isXmlHttpRequest()")
+     */
+    public function listLimitedAction(Request $request)
+    {
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Album');
+        $repository->setEncoder($this->get('app.encoder'));
+        $response = new Response(json_encode($repository->getAllByLimit(self::PAGE_LIMIT)));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
 }
